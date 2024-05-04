@@ -3,8 +3,11 @@ package com.task.manager.service;
 import com.task.manager.dto.CreateTaskRequestDTO;
 import com.task.manager.dto.TaskDTO;
 import com.task.manager.dto.UpdateTaskRequestDTO;
+import com.task.manager.entities.AppUser;
 import com.task.manager.entities.Task;
+import com.task.manager.entities.enums.TaskStatus;
 import com.task.manager.repository.TaskRepository;
+import com.task.manager.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +20,8 @@ import java.util.stream.Collectors;
 public class TaskService implements ITaskService{
     @Autowired
     private TaskRepository taskRepository;
-
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public List<TaskDTO> getAllTasks() {
@@ -35,6 +39,10 @@ public class TaskService implements ITaskService{
     @Override
     public TaskDTO createTask(CreateTaskRequestDTO taskDTO) {
         Task task = convertToEntity(taskDTO);
+        Optional<AppUser> user = userRepository.findById(taskDTO.getCreatedByUserId());
+        if(user.isPresent()){
+            task.setCreatedBy(user.get());
+        }
         Task savedTask = taskRepository.save(task);
         return convertToDTO(savedTask);
     }
@@ -75,9 +83,10 @@ public class TaskService implements ITaskService{
     private Task convertToEntity(CreateTaskRequestDTO taskDTO) {
         Task task = new Task();
         task.setTitle(taskDTO.getTitle());
+        task.setStatus(TaskStatus.TODO);
         task.setDescription(taskDTO.getDescription());
         task.setDueDate(taskDTO.getDueDate());
-        // Set other fields as needed
+
         return task;
     }
 }

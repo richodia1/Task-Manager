@@ -4,7 +4,7 @@ import com.task.manager.dto.CreateUserRequestDTO;
 import com.task.manager.dto.UpdateUserRequestDTO;
 import com.task.manager.dto.UserDTO;
 
-import com.task.manager.entities.User;
+import com.task.manager.entities.AppUser;
 import com.task.manager.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,35 +27,35 @@ public class UserService implements IUserService{
 
     @Override
     public Optional<UserDTO> getUserById(Long id) {
-        Optional<User> userOptional = userRepository.findById(id);
+        Optional<AppUser> userOptional = userRepository.findById(id);
         return userOptional.map(this::convertToDTO);
     }
 
     @Override
     public Optional<UserDTO> getUserByUsername(String username) {
-        Optional<User> userOptional = userRepository.findByUsername(username);
+        Optional<AppUser> userOptional = userRepository.findByUsername(username);
         return userOptional.map(this::convertToDTO);
     }
 
     @Override
     public UserDTO createUser(CreateUserRequestDTO userDTO) {
-        User user = convertToEntity(userDTO);
-        User savedUser = userRepository.save(user);
+        AppUser user = convertToEntity(userDTO);
+        AppUser savedUser = userRepository.save(user);
         return convertToDTO(savedUser);
     }
 
     @Override
     public UserDTO updateUser(Long id, UpdateUserRequestDTO userDTO) {
-        Optional<User> existingUserOptional = userRepository.findById(id);
+        Optional<AppUser> existingUserOptional = userRepository.findById(id);
         if (existingUserOptional.isPresent()) {
-            User existingUser = existingUserOptional.get();
+            AppUser existingUser = existingUserOptional.get();
             existingUser.setFirstName(userDTO.getFirstName());
             existingUser.setLastName(userDTO.getLastName());
             existingUser.setDateOfBirth(userDTO.getDateOfBirth());
             existingUser.setUsername(userDTO.getUsername());
             existingUser.setRegistrar(userDTO.getRegistrar());
             // Update other fields as needed
-            User updatedUser = userRepository.save(existingUser);
+            AppUser updatedUser = userRepository.save(existingUser);
             return convertToDTO(updatedUser);
         }
         // Alternatively, throw an exception or handle the case differently if user not found
@@ -67,7 +67,7 @@ public class UserService implements IUserService{
         userRepository.deleteById(id);
     }
 
-    private UserDTO convertToDTO(User user) {
+    private UserDTO convertToDTO(AppUser user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
         userDTO.setFirstName(user.getFirstName());
@@ -78,8 +78,8 @@ public class UserService implements IUserService{
         return userDTO;
     }
 
-    private User convertToEntity(CreateUserRequestDTO userDTO) {
-        User user = new User();
+    private AppUser convertToEntity(CreateUserRequestDTO userDTO) {
+        AppUser user = new AppUser();
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
         user.setDateOfBirth(userDTO.getDateOfBirth());

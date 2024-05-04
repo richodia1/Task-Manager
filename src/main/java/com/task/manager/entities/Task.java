@@ -8,9 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Calendar;
 
 @Data
 @Entity
@@ -37,7 +35,7 @@ public class Task {
     private TaskStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User createdBy;
+    private AppUser createdBy;
 
     @NotNull
     private Instant lastModifiedDate;
